@@ -13,6 +13,11 @@ namespace GameCenter.Helpers
             CreateMap<Person, PersonDTO>().ReverseMap();
             CreateMap<PersonCreationDTO, Person>()
                 .ForMember(x => x.Picture, options => options.Ignore());
+            CreateMap<Person, PersonPatchDTO>().ReverseMap();
+            CreateMap<Game, GameDTO>().ReverseMap();
+            CreateMap<GameCreationDTO, Game>()
+                .ForMember(x => x.Poster, options => options.Ignore());
+            CreateMap<Game, GamePatchDTO>().ReverseMap();
         }
     }
 }

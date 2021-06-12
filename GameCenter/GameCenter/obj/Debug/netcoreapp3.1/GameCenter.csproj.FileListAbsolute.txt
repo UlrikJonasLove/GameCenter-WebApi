@@ -64,3 +64,6 @@ C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\obj\Debug\netcoreapp3.1\GameCenter.csproj.CopyComplete
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\AutoMapper.dll
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll

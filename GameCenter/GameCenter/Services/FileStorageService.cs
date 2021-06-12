@@ -5,7 +5,7 @@ using GameCenter.Services.Interface;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace gamecenter.Server.Helpers
+namespace GameCenter.Services
 {
     public class FileStorageService : IFileStorageService
     {

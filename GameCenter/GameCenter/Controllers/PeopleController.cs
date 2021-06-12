@@ -6,9 +6,11 @@ using AutoMapper;
 using GameCenter.Data;
 using GameCenter.DTOs;
 using GameCenter.Filters;
+using GameCenter.Helpers;
 using GameCenter.Models;
 using GameCenter.Services.Interface;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +26,7 @@ namespace GameCenter.Controllers
         private readonly ILogger<GenresController> logger;
         private readonly IMapper mapper;
         private readonly IFileStorageService fileStorage;
-        private readonly string containerName = "people";
+        private readonly string containerName = "People";
 
         public PeopleController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper, IFileStorageService fileStorage)
         {
@@ -35,13 +37,14 @@ namespace GameCenter.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<PersonDTO>>> Get()
+        public async Task<ActionResult<List<PersonDTO>>> Get([FromQuery] PaginationDTO paginationDto)
         {
             try
             {
-                var people = await context.People.AsNoTracking().ToListAsync();
-                var peopleDto = mapper.Map<List<PersonDTO>>(people);
-                return peopleDto; 
+                var queryable = context.People.AsQueryable();
+                await HttpContext.InsertPaginationParametersInResponse(queryable, paginationDto.ItemsPerPage);
+                var people = await queryable.Paginate(paginationDto).ToListAsync();               
+                return mapper.Map<List<PersonDTO>>(people);
             }
             catch(Exception)
             {
@@ -123,6 +126,29 @@ namespace GameCenter.Controllers
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "database failure");
             }           
+        }
+
+        [HttpPatch("{Id}")]
+        public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<PersonPatchDTO> patchDocument)
+        {
+            if(patchDocument == null) { return BadRequest(); }
+
+            var entityFromDb = await context.People.FirstOrDefaultAsync(x => x.Id == id);
+            if(entityFromDb == null) { return NotFound(); }
+
+            var entityDto = mapper.Map<PersonPatchDTO>(entityFromDb);
+
+            patchDocument.ApplyTo(entityDto, ModelState);
+
+            var isValid = TryValidateModel(entityDto);
+
+            if(!isValid) { return BadRequest(ModelState); }
+
+            mapper.Map(entityDto, entityFromDb);
+
+            await context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         [HttpDelete("{Id}")]
