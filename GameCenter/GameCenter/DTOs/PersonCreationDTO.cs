@@ -14,7 +14,7 @@ namespace GameCenter.DTOs
         public string Biography { get; set; }
         public DateTime DateOfBirth { get; set; }
         [FileSizeValidator(4)]
-        [ContentTypeValidator(ContentTypeGroup.Image)]
+        //[ContentTypeValidator(ContentTypeGroup.Image)]
         public IFormFile Picture { get; set; }      
     }
 }

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
 using GameCenter.Data;
 using GameCenter.DTOs;
 using GameCenter.Filters;
 using GameCenter.Models;
+using GameCenter.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -21,12 +23,15 @@ namespace GameCenter.Controllers
         private readonly AppDbContext context;
         private readonly ILogger<GenresController> logger;
         private readonly IMapper mapper;
+        private readonly IFileStorageService fileStorage;
+        private readonly string containerName = "people";
 
-        public PeopleController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper)
+        public PeopleController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper, IFileStorageService fileStorage)
         {
             this.context = context;
             this.logger = logger;
             this.mapper = mapper;
+            this.fileStorage = fileStorage;
         }
 
         [HttpGet]
@@ -67,6 +72,17 @@ namespace GameCenter.Controllers
             try
             {
                 var person = mapper.Map<Person>(personCreationDto);
+                if(personCreationDto.Picture != null)
+                {
+                    using(var memoryStream = new MemoryStream())
+                    {
+                        personCreationDto.Picture.CopyTo(memoryStream);
+                        var content = memoryStream.ToArray();
+                        var extension = Path.GetExtension(personCreationDto.Picture.FileName);
+                        person.Picture = await fileStorage.SaveFile(content, extension, containerName, personCreationDto.Picture.ContentType);
+                    }
+                }
+                
                 context.Add(person);
                 await context.SaveChangesAsync();
                 var personDto = mapper.Map<PersonDTO>(person);
@@ -79,15 +95,29 @@ namespace GameCenter.Controllers
         }
 
         [HttpPut("{Id}")]
-        public async Task<ActionResult> Put(int id,[FromBody] GenreCreationDTO genreCreationDto)
+        public async Task<ActionResult> Put(int id,[FromBody] PersonCreationDTO personCreationDto)
         {
             try
             {
-                var genre = mapper.Map<Genre>(genreCreationDto);
-                genre.Id = id;
-                context.Entry(genre).State = EntityState.Modified;
+                var personDb = await context.People.FirstOrDefaultAsync(x => x.Id == id);
+
+                if(personDb == null) { return NotFound(); }
+
+                personDb = mapper.Map(personCreationDto, personDb);
+
+                if(personCreationDto.Picture != null)
+                {
+                    using(var memoryStream = new MemoryStream())
+                    {
+                        await personCreationDto.Picture.CopyToAsync(memoryStream);
+                        var content = memoryStream.ToArray();
+                        var extension = Path.GetExtension(personCreationDto.Picture.FileName);
+                        personDb.Picture = await fileStorage.EditFile(content, extension, containerName, personDb.Picture, personCreationDto.Picture.ContentType);
+                    }
+                }
+
                 await context.SaveChangesAsync();
-                return Ok();
+                return NoContent();
             }
             catch(Exception)
             {
@@ -100,10 +130,10 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var genre = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
-                if(genre == null) { return NotFound(); }
+                var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
+                if(person == null) { return NotFound(); }
 
-                context.Remove(genre);
+                context.Remove(person);
                 await context.SaveChangesAsync();
                 return NoContent();
             }

@@ -1,6 +1,8 @@
+using gamecenter.Server.Helpers;
 using GameCenter.Data;
 using GameCenter.Filters;
 using GameCenter.Services;
+using GameCenter.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +37,8 @@ namespace GameCenter
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<IFileStorageService, FileStorageService>();
+            services.AddHttpContextAccessor();
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(MyExceptionFilter));
@@ -50,7 +54,7 @@ namespace GameCenter
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
             app.UseRouting();
             
             app.UseAuthentication();
