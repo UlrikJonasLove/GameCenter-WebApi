@@ -1,8 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
+using GameCenter.Data;
+using GameCenter.DTOs;
+using GameCenter.Filters;
 using GameCenter.Models;
-using GameCenter.Services.Interface;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace GameCenter.Controllers
 {
@@ -10,46 +18,101 @@ namespace GameCenter.Controllers
     [ApiController]
     public class GenresController : ControllerBase
     {
-        private readonly IRepository repository;
+        private readonly AppDbContext context;
+        private readonly ILogger<GenresController> logger;
+        private readonly IMapper mapper;
 
-        public GenresController(IRepository repository)
+        public GenresController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper)
         {
-            this.repository = repository;
+            this.context = context;
+            this.logger = logger;
+            this.mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Genre>>> Get()
+        public async Task<ActionResult<List<GenreDTO>>> Get()
         {
-            return await repository.GetAllGenres();
+            try
+            {
+                var genres = await context.Genres.AsNoTracking().ToListAsync();
+                var genresDto = mapper.Map<List<GenreDTO>>(genres);
+                return genresDto; 
+            }
+            catch(Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "database failure");
+            }
         }
 
         [HttpGet("{Id}")]
-        public ActionResult<Genre> Get(int id)
+        public async Task<ActionResult<GenreDTO>> Get(int id)
         {
-            var genre = repository.GetGenreById(id);
-            if(genre == null) 
+            try
             {
-                return NotFound();
+                var genre = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+                if(genre == null) 
+                {
+                    return NotFound();
+                }
+                var genreDto = mapper.Map<GenreDTO>(genre);
+                return genreDto;
             }
-            return genre;
+            catch(Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "database failure");
+            }
         }
 
         [HttpPost]
-        public ActionResult Post()
+        public async Task<ActionResult> Post([FromBody] GenreCreationDTO genreCreationDto)
         {
-            return NoContent();
+            try
+            {
+                var genre = mapper.Map<Genre>(genreCreationDto);
+                context.Add(genre);
+                await context.SaveChangesAsync();
+                var genreDto = mapper.Map<GenreDTO>(genre);
+                return new CreatedAtRouteResult(new {genreDto.Id}, genreDto);
+            }
+            catch(Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "database failure");
+            }   
         }
 
-        [HttpPut]
-        public ActionResult Put()
+        [HttpPut("{Id}")]
+        public async Task<ActionResult> Put(int id,[FromBody] GenreCreationDTO genreCreationDto)
         {
-            return NoContent();
+            try
+            {
+                var genre = mapper.Map<Genre>(genreCreationDto);
+                genre.Id = id;
+                context.Entry(genre).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+            catch(Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "database failure");
+            }           
         }
 
-        [HttpDelete]
-        public ActionResult Delete()
+        [HttpDelete("{Id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            return NoContent();
+            try
+            {
+                var genre = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+                if(genre == null) { return NotFound(); }
+
+                context.Remove(genre);
+                await context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch(Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "database failure");
+            }
         }
     }
 }
