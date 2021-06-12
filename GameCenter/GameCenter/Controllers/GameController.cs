@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GameCenter.Data;
 using GameCenter.DTOs;
+using GameCenter.Helpers;
 using GameCenter.Models;
 using GameCenter.Services.Interface;
 using Microsoft.AspNetCore.Http;
@@ -31,19 +33,72 @@ namespace GameCenter.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<GameDTO>>> Get()
+        public async Task<ActionResult<IndexGamePageDTO>> Get()
         {
-            var games = await context.Game.ToListAsync();
+            var top = 6;
+            var today = DateTime.Today;
+            var upcomingReleases = await context.Game
+                .Where(x => x.ReleaseDate > today)
+                .OrderBy(x => x.ReleaseDate)
+                .Take(top)
+                .ToListAsync();
+
+            var newlyReleases = await context.Game
+                .Where(x => x.NewlyRelease)
+                .Take(top)
+                .ToListAsync();
+
+            var result = new IndexGamePageDTO();
+            result.NewlyReleases = mapper.Map<List<GameDTO>>(newlyReleases);
+            result.UpcomingReleases = mapper.Map<List<GameDTO>>(upcomingReleases);
+            return result;
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<GameDTO>>> Filter([FromQuery] GameFilterDTO gameFilterDto)
+        {
+            var gamesQueryable = context.Game.AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(gameFilterDto.Title))
+            {
+                gamesQueryable = gamesQueryable.Where(x => x.Title.Contains(gameFilterDto.Title));
+            }
+
+            if(gameFilterDto.NewlyReleases)
+            {
+                gamesQueryable = gamesQueryable.Where(x => x.NewlyRelease);
+            }
+
+            if(gameFilterDto.UpcomingReleases)
+            {
+                var today = DateTime.Today;
+                gamesQueryable = gamesQueryable.Where(x => x.ReleaseDate > today);
+            }
+
+            if(gameFilterDto.GenreId != 0)
+            {
+                gamesQueryable = gamesQueryable
+                    .Where(x => x.GamesGenres.Select(y => y.GenreId)
+                    .Contains(gameFilterDto.GenreId));
+            }
+
+            await HttpContext.InsertPaginationParametersInResponse(gamesQueryable, gameFilterDto.ItemsPerPage);
+            var games = await gamesQueryable.Paginate(gameFilterDto.pagination).ToListAsync();
+
             return mapper.Map<List<GameDTO>>(games);
         }
 
         [HttpGet("{Id}")]
-        public async Task<ActionResult<GameDTO>> Get(int id)
+        public async Task<ActionResult<GameDetailDTO>> Get(int id)
         {
-            var game = await context.Game.FirstOrDefaultAsync(x => x.Id == id);
+            var game = await context.Game
+                .Include(x => x.GamesActors).ThenInclude(x => x.Person)
+                .Include(x => x.GamesGenres).ThenInclude(x => x.Genre)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if(game == null) { return NotFound(); }
 
-            return mapper.Map<GameDTO>(game);
+            return mapper.Map<GameDetailDTO>(game);
         }
 
         [HttpPost]
@@ -63,6 +118,8 @@ namespace GameCenter.Controllers
                     }
                 }
                 
+                AnnotatePersonOrder(game);
+
                 context.Add(game);
                 await context.SaveChangesAsync();
                 var gameDto = mapper.Map<GameDTO>(game);
@@ -72,6 +129,17 @@ namespace GameCenter.Controllers
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "database failure");
             }   
+        }
+
+        private static void AnnotatePersonOrder(Game game)
+        {
+            if(game.GamesActors != null)
+            {
+                for(int i = 0; i < game.GamesActors.Count; i++)
+                {
+                    game.GamesActors[i].Order = i;
+                }
+            }
         }
 
         [HttpPut("{Id}")]
@@ -95,6 +163,8 @@ namespace GameCenter.Controllers
                     }
                 }
 
+                await context.Database.ExecuteSqlInterpolatedAsync($"delete from GamesActors where GameId = {gameDb.Id}, delete from GamesGenres where GameId = {gameDb.Id}");
+                AnnotatePersonOrder(gameDb);
                 await context.SaveChangesAsync();
                 return NoContent();
             }

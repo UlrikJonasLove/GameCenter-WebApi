@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GameCenter.Models
@@ -12,5 +13,6 @@ namespace GameCenter.Models
         public string Biography { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Picture { get; set; } 
+        public List<GamesActors> GameActors { get; set; }
     }
 }

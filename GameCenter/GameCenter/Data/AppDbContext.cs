@@ -10,8 +10,18 @@ namespace GameCenter.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<GamesGenres>().HasKey(x => new {x.GenreId, x.GameId});
+            modelBuilder.Entity<GamesActors>().HasKey(x => new {x.PersonId, x.GameId});
+            
+            base.OnModelCreating(modelBuilder);
+        }
+
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Person> People { get; set; }
         public DbSet<Game> Game { get; set; }
+        public DbSet<GamesGenres> GamesGenres { get; set; }
+        public DbSet<GamesActors> GamesActors { get; set; }
     }
 }

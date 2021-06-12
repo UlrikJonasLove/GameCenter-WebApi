@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GameCenter.Models
@@ -13,5 +14,7 @@ namespace GameCenter.Models
         public bool NewlyRelease { get; set; }
         public DateTime ReleaseDate { get; set; }
         public string Poster { get; set; }       
+        public List<GamesActors> GamesActors { get; set;}
+        public List<GamesGenres> GamesGenres { get; set;}
     }
 }

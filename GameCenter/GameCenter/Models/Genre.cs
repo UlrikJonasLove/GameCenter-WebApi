@@ -11,5 +11,6 @@ namespace GameCenter.Models
         [StringLength(40)]
         [FirstletterUppercase]
         public string Name { get; set; }
+        public List<GamesGenres> GamesGenres { get; set; }
     }
 }
