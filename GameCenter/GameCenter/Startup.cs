@@ -19,6 +19,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace GameCenter
 {
@@ -36,9 +39,27 @@ namespace GameCenter
         {
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddCors();
+            services.AddDataProtection();
             services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<HashService>();
             services.AddTransient<IFileStorageService, FileStorageService>();
+            services.AddTransient<IHostedService, NewlyReleasedGameService>();
             services.AddHttpContextAccessor();
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
+                            ClockSkew = TimeSpan.Zero
+                    });
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(MyExceptionFilter));
@@ -61,6 +82,11 @@ namespace GameCenter
             
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors(
+                builder => builder
+                .WithOrigins("https://www.apirequest.io")
+                .WithMethods("GET", "POST")
+                .AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {

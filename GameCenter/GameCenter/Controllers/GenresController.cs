@@ -6,6 +6,8 @@ using GameCenter.Data;
 using GameCenter.DTOs;
 using GameCenter.Filters;
 using GameCenter.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -64,6 +66,7 @@ namespace GameCenter.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<ActionResult> Post([FromBody] GenreCreationDTO genreCreationDto)
         {
             try

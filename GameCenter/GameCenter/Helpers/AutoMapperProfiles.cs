@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using GameCenter.DTOs;
 using GameCenter.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GameCenter.Helpers
 {
@@ -27,6 +28,10 @@ namespace GameCenter.Helpers
                 .ForMember(x => x.Genre, options => options.MapFrom(MapGamesGenres))
                 .ForMember(x => x.Actor, options => options.MapFrom(MapGamesPeople));
             CreateMap<Game, GamePatchDTO>().ReverseMap();
+
+            CreateMap<IdentityUser, UserDTO>()
+                .ForMember(x => x.EmailAddress, options => options.MapFrom(x => x.Email))
+                .ForMember(x => x.UserId, options => options.MapFrom(x => x.Id));
         }
 
         private List<GenreDTO> MapGamesGenres(Game game, GameDetailDTO gameDetailDTO)

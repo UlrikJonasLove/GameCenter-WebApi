@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+using Microsoft.Extensions.Logging;
 
 namespace GameCenter.Controllers
 {
@@ -20,13 +22,15 @@ namespace GameCenter.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
+        private readonly ILogger logger;
         private readonly AppDbContext context;
         private readonly IMapper mapper;
         private readonly IFileStorageService fileStorage;
         private readonly string containerName = "Games";
 
-        public GameController(AppDbContext context, IMapper mapper, IFileStorageService fileStorage)
+        public GameController(ILogger logger, AppDbContext context, IMapper mapper, IFileStorageService fileStorage)
         {
+            this.logger = logger;
             this.context = context;
             this.mapper = mapper;
             this.fileStorage = fileStorage;
@@ -57,6 +61,14 @@ namespace GameCenter.Controllers
         [HttpGet("filter")]
         public async Task<ActionResult<List<GameDTO>>> Filter([FromQuery] GameFilterDTO gameFilterDto)
         {
+            try
+            {
+
+            }
+            catch(Exception)
+            {
+                
+            }
             var gamesQueryable = context.Game.AsQueryable();
 
             if(!string.IsNullOrWhiteSpace(gameFilterDto.Title))
@@ -80,6 +92,19 @@ namespace GameCenter.Controllers
                 gamesQueryable = gamesQueryable
                     .Where(x => x.GamesGenres.Select(y => y.GenreId)
                     .Contains(gameFilterDto.GenreId));
+            }
+
+            if(!string.IsNullOrWhiteSpace(gameFilterDto.OrderingField))
+            {
+                try
+                {
+                    gamesQueryable = gamesQueryable
+                        .OrderBy($"{gameFilterDto.OrderingField} {(gameFilterDto.AscendingOrder ? "ascending" : "descending")}");
+                }
+                catch(Exception)
+                {
+                   logger.LogWarning("Could not order by field: " + gameFilterDto.OrderingField);
+                }           
             }
 
             await HttpContext.InsertPaginationParametersInResponse(gamesQueryable, gameFilterDto.ItemsPerPage);

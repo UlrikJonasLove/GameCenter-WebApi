@@ -12,5 +12,7 @@ namespace GameCenter.DTOs
         public int GenreId { get; set; }
         public bool NewlyReleases { get; set; }
         public bool UpcomingReleases { get; set; }    
+        public string OrderingField { get; set; }
+        public bool AscendingOrder{ get; set; } = true;
     }
 }
