@@ -73,3 +73,10 @@ C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Core.dll
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\System.Linq.Dynamic.Core.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Microsoft.OpenApi.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\obj\Debug\netcoreapp3.1\GameCenter.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\GameCenter.xml
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\obj\Debug\netcoreapp3.1\GameCenter.xml

@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace GameCenter
 {
@@ -64,13 +66,42 @@ namespace GameCenter
             {
                 options.Filters.Add(typeof(MyExceptionFilter));
             })
-            .AddNewtonsoftJson()
-            .AddXmlDataContractSerializerFormatters();
+                .AddNewtonsoftJson()
+                .AddXmlDataContractSerializerFormatters();
+
+            services.AddSwaggerGen(config =>
+            {
+                config.SwaggerDoc("v1", new OpenApiInfo 
+                { 
+                    Version = "v1", 
+                    Title = "GameCenter",
+                    Description = "Web Api for Game Center",
+                    TermsOfService = new Uri("https://github.com/UlrikJonasLove/GameCenter-WebApi"),
+                    License = new OpenApiLicense()
+                    {
+                        Name = "MIT"
+                    },
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "UlrikJonasLove",
+                        Url = new Uri("https://www.ulrikjonaslove.se/")
+                    }
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                config.IncludeXmlComments(xmlPath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(config =>
+            {
+                config.SwaggerEndpoint("/swagger/v1/swagger.json", "GameCenter");
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

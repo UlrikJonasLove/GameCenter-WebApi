@@ -46,6 +46,8 @@ namespace GameCenter.Controllers
             }
         }
 
+        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(GenreDTO), 200)]
         [HttpGet("{Id}")]
         public async Task<ActionResult<GenreDTO>> Get(int id)
         {
@@ -100,6 +102,11 @@ namespace GameCenter.Controllers
             }           
         }
 
+        /// <summary>
+        /// Delete a Genre
+        /// </summary>
+        /// <param name="id">Id of the genre to delete</param>
+        /// <returns></returns>
         [HttpDelete("{Id}")]
         public async Task<ActionResult> Delete(int id)
         {

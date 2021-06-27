@@ -39,6 +39,8 @@ namespace GameCenter.Controllers
             this.mapper = mapper;
         }
 
+        [ProducesResponseType(400)]
+        [ProducesResponseType(typeof(UserToken), 200)]
         [HttpPost("Create")]
         public async Task<ActionResult<UserToken>> CreateUser([FromBody] UserInfo userInfo)
         {
