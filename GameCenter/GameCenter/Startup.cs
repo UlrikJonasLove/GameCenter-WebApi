@@ -24,6 +24,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using GameCenter.Helpers;
 
 namespace GameCenter
 {
@@ -49,7 +51,11 @@ namespace GameCenter
             services.AddTransient<IHostedService, NewlyReleasedGameService>();
             services.AddHttpContextAccessor();
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddTransient<GenreHATEOASAttribute>();
+            services.AddTransient<LinksGenerator>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                     options.TokenValidationParameters = new TokenValidationParameters

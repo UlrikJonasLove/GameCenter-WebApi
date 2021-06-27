@@ -41,7 +41,7 @@ namespace GameCenter.Controllers
 
         [ProducesResponseType(400)]
         [ProducesResponseType(typeof(UserToken), 200)]
-        [HttpPost("Create")]
+        [HttpPost("Create", Name = "createUser")]
         public async Task<ActionResult<UserToken>> CreateUser([FromBody] UserInfo userInfo)
         {
             var user = new IdentityUser { UserName = userInfo.EmailAddress, Email = userInfo.EmailAddress };
@@ -57,7 +57,7 @@ namespace GameCenter.Controllers
             }
         }
 
-        [HttpPost("login")]
+        [HttpPost("login", Name = "Login")]
         public async Task<ActionResult<UserToken>> Login([FromBody] UserInfo userInfo)
         {
             var result = await _signInManager.PasswordSignInAsync(userInfo.EmailAddress,

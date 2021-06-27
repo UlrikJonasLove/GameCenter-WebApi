@@ -36,7 +36,7 @@ namespace GameCenter.Controllers
             this.fileStorage = fileStorage;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "getPeople")]
         public async Task<ActionResult<List<PersonDTO>>> Get([FromQuery] PaginationDTO paginationDto)
         {
             try
