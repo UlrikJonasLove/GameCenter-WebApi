@@ -19,13 +19,13 @@ namespace GameCenter.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenresController : ControllerBase
+    public class GenresController : CustomBaseController
     {
         private readonly AppDbContext context;
         private readonly ILogger<GenresController> logger;
         private readonly IMapper mapper;
 
-        public GenresController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper)
+        public GenresController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper) : base(context, mapper)
         {
             this.context = context;
             this.logger = logger;
@@ -34,13 +34,11 @@ namespace GameCenter.Controllers
 
         [HttpGet(Name = "getGenres")]
         [ServiceFilter(typeof(GenreHATEOASAttribute))]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<List<GenreDTO>>> Get()
         {
             try
             {
-                var genres = await context.Genres.AsNoTracking().ToListAsync();
-                var genresDto = mapper.Map<List<GenreDTO>>(genres);
-                
+                return await Get<Genre, GenreDTO>();
 
                 /*if(includeHATEOS)
                 {
@@ -50,8 +48,6 @@ namespace GameCenter.Controllers
                     ResourceCollection.Links.Add(new Link(Url.Link("createGenre", new {}), rel: "create-genre", method: "POST")); 
                     return Ok(ResourceCollection);               
                 } */
-
-                return Ok(genresDto);
             }
             catch(Exception)
             {
@@ -74,15 +70,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var genre = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
-                if(genre == null) 
-                {
-                    return NotFound();
-                }
-                var genreDto = mapper.Map<GenreDTO>(genre);
-             
-                
-                return genreDto;
+                return await Get<Genre, GenreDTO>(id);
             }
             catch(Exception)
             {
@@ -96,11 +84,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var genre = mapper.Map<Genre>(genreCreationDto);
-                context.Add(genre);
-                await context.SaveChangesAsync();
-                var genreDto = mapper.Map<GenreDTO>(genre);
-                return new CreatedAtRouteResult(new {genreDto.Id}, genreDto);
+                return await Post<GenreCreationDTO, Genre, GenreDTO>(genreCreationDto);
             }
             catch(Exception)
             {
@@ -113,11 +97,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var genre = mapper.Map<Genre>(genreCreationDto);
-                genre.Id = id;
-                context.Entry(genre).State = EntityState.Modified;
-                await context.SaveChangesAsync();
-                return Ok();
+                return await Put<GenreCreationDTO, Genre>(id, genreCreationDto);
             }
             catch(Exception)
             {
@@ -135,12 +115,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var genre = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
-                if(genre == null) { return NotFound(); }
-
-                context.Remove(genre);
-                await context.SaveChangesAsync();
-                return NoContent();
+                return await Delete<Genre>(id);
             }
             catch(Exception)
             {

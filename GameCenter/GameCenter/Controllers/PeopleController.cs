@@ -20,7 +20,7 @@ namespace GameCenter.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PeopleController : ControllerBase
+    public class PeopleController : CustomBaseController
     {
         private readonly AppDbContext context;
         private readonly ILogger<GenresController> logger;
@@ -28,7 +28,7 @@ namespace GameCenter.Controllers
         private readonly IFileStorageService fileStorage;
         private readonly string containerName = "People";
 
-        public PeopleController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper, IFileStorageService fileStorage)
+        public PeopleController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper, IFileStorageService fileStorage) : base(context, mapper)
         {
             this.context = context;
             this.logger = logger;
@@ -41,10 +41,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var queryable = context.People.AsQueryable();
-                await HttpContext.InsertPaginationParametersInResponse(queryable, paginationDto.ItemsPerPage);
-                var people = await queryable.Paginate(paginationDto).ToListAsync();               
-                return mapper.Map<List<PersonDTO>>(people);
+                return await Get<Person, PersonDTO>(paginationDto);
             }
             catch(Exception)
             {
@@ -57,11 +54,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
-                if(person == null) { return NotFound(); }
-
-                var personDto = mapper.Map<PersonDTO>(person);
-                return personDto;
+                return await Get<Person, PersonDTO>(id);
             }
             catch(Exception)
             {
@@ -131,24 +124,7 @@ namespace GameCenter.Controllers
         [HttpPatch("{Id}")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<PersonPatchDTO> patchDocument)
         {
-            if(patchDocument == null) { return BadRequest(); }
-
-            var entityFromDb = await context.People.FirstOrDefaultAsync(x => x.Id == id);
-            if(entityFromDb == null) { return NotFound(); }
-
-            var entityDto = mapper.Map<PersonPatchDTO>(entityFromDb);
-
-            patchDocument.ApplyTo(entityDto, ModelState);
-
-            var isValid = TryValidateModel(entityDto);
-
-            if(!isValid) { return BadRequest(ModelState); }
-
-            mapper.Map(entityDto, entityFromDb);
-
-            await context.SaveChangesAsync();
-
-            return NoContent();
+            return await Patch<Person, PersonPatchDTO>(id, patchDocument);
         }
 
         [HttpDelete("{Id}")]
@@ -156,12 +132,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
-                if(person == null) { return NotFound(); }
-
-                context.Remove(person);
-                await context.SaveChangesAsync();
-                return NoContent();
+                return await Delete<Person>(id);
             }
             catch(Exception)
             {

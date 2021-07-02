@@ -4,7 +4,7 @@ using GameCenter.Validations;
 
 namespace GameCenter.Models
 {
-    public class Genre
+    public class Genre : IID
     {
         public int Id { get; set; }
         [Required]

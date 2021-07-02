@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GameCenter.Models
 {
-    public class Game
+    public class Game : IID
     {
         public int Id { get; set; }
         [Required]

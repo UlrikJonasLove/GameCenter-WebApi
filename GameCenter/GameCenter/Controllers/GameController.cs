@@ -20,7 +20,7 @@ namespace GameCenter.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class GameController : CustomBaseController
     {
         private readonly ILogger logger;
         private readonly AppDbContext context;
@@ -28,7 +28,7 @@ namespace GameCenter.Controllers
         private readonly IFileStorageService fileStorage;
         private readonly string containerName = "Games";
 
-        public GameController(ILogger logger, AppDbContext context, IMapper mapper, IFileStorageService fileStorage)
+        public GameController(ILogger logger, AppDbContext context, IMapper mapper, IFileStorageService fileStorage) : base(context, mapper)
         {
             this.logger = logger;
             this.context = context;
@@ -202,24 +202,7 @@ namespace GameCenter.Controllers
         [HttpPatch("{Id}")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<GamePatchDTO> patchDocument)
         {
-            if(patchDocument == null) { return BadRequest(); }
-
-            var entityFromDb = await context.Game.FirstOrDefaultAsync(x => x.Id == id);
-            if(entityFromDb == null) { return NotFound(); }
-
-            var entityDto = mapper.Map<GamePatchDTO>(entityFromDb);
-
-            patchDocument.ApplyTo(entityDto, ModelState);
-
-            var isValid = TryValidateModel(entityDto);
-
-            if(!isValid) { return BadRequest(ModelState); }
-
-            mapper.Map(entityDto, entityFromDb);
-
-            await context.SaveChangesAsync();
-
-            return NoContent();
+            return await Patch<Game, GamePatchDTO>(id, patchDocument);
         }
 
         [HttpDelete("{Id}")]
@@ -227,12 +210,7 @@ namespace GameCenter.Controllers
         {
             try
             {
-                var game = await context.Game.FirstOrDefaultAsync(x => x.Id == id);
-                if(game == null) { return NotFound(); }
-
-                context.Remove(game);
-                await context.SaveChangesAsync();
-                return NoContent();
+                return await Delete<Game>(id);
             }
             catch(Exception)
             {

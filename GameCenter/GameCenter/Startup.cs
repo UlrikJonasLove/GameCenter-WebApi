@@ -42,7 +42,8 @@ namespace GameCenter
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options => 
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), 
+                sqlServer => sqlServer.UseNetTopologySuite()));
             services.AddCors();
             services.AddDataProtection();
             services.AddAutoMapper(typeof(Startup));

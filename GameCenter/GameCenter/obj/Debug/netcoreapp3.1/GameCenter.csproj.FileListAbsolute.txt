@@ -80,3 +80,7 @@ C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\obj\Debug\netcoreapp3.1\GameCenter.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\GameCenter.xml
 C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\obj\Debug\netcoreapp3.1\GameCenter.xml
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\obj\Debug\netcoreapp3.1\EFCoreSqlServerNetTopologySuite.cs
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\NetTopologySuite.dll
+C:\Users\jonas\Desktop\myCode\myRepo\GameCenter-WebApi\GameCenter\GameCenter\bin\Debug\netcoreapp3.1\NetTopologySuite.IO.SqlServerBytes.dll
