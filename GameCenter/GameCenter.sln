@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameCenter", "GameCenter\GameCenter.csproj", "{CFC40E88-BA3C-4B38-B068-843DBB633018}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameCenter", "GameCenter\GameCenter.csproj", "{CFC40E88-BA3C-4B38-B068-843DBB633018}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameCenter.Tests", "GameCenterApi\GameCenter.Tests.csproj", "{06434FF9-19BB-4D3B-9089-81A4FFEA385D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{CFC40E88-BA3C-4B38-B068-843DBB633018}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFC40E88-BA3C-4B38-B068-843DBB633018}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFC40E88-BA3C-4B38-B068-843DBB633018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06434FF9-19BB-4D3B-9089-81A4FFEA385D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06434FF9-19BB-4D3B-9089-81A4FFEA385D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06434FF9-19BB-4D3B-9089-81A4FFEA385D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06434FF9-19BB-4D3B-9089-81A4FFEA385D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

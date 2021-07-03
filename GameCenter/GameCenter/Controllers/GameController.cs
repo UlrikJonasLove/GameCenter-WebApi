@@ -28,7 +28,7 @@ namespace GameCenter.Controllers
         private readonly IFileStorageService fileStorage;
         private readonly string containerName = "Games";
 
-        public GameController(ILogger logger, AppDbContext context, IMapper mapper, IFileStorageService fileStorage) : base(context, mapper)
+        public GameController(AppDbContext context, IMapper mapper, IFileStorageService fileStorage, ILogger logger) : base(context, mapper)
         {
             this.logger = logger;
             this.context = context;

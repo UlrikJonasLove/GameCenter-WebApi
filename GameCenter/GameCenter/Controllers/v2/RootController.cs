@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using GameCenter.DTOs;
 using GameCenter.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -19,4 +19,4 @@ namespace GameCenter.Controller.v2
             return links;
         }
     }
-}
+} */

@@ -16,12 +16,10 @@ namespace GameCenter.Controllers
     [ApiController]
     public class GameCentersController : ControllerBase
     {
-        private readonly IMapper mapper;
         private readonly AppDbContext context;
 
-        public GameCentersController(IMapper mapper, AppDbContext context)
+        public GameCentersController(AppDbContext context)
         {
-            this.mapper = mapper;
             this.context = context;
         }
 

@@ -23,15 +23,13 @@ namespace GameCenter.Controllers
     public class PeopleController : CustomBaseController
     {
         private readonly AppDbContext context;
-        private readonly ILogger<GenresController> logger;
         private readonly IMapper mapper;
         private readonly IFileStorageService fileStorage;
         private readonly string containerName = "People";
 
-        public PeopleController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper, IFileStorageService fileStorage) : base(context, mapper)
+        public PeopleController(AppDbContext context, IMapper mapper, IFileStorageService fileStorage) : base(context, mapper)
         {
             this.context = context;
-            this.logger = logger;
             this.mapper = mapper;
             this.fileStorage = fileStorage;
         }

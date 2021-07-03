@@ -22,13 +22,11 @@ namespace GameCenter.Controllers
     public class GenresController : CustomBaseController
     {
         private readonly AppDbContext context;
-        private readonly ILogger<GenresController> logger;
         private readonly IMapper mapper;
 
-        public GenresController(AppDbContext context, ILogger<GenresController> logger, IMapper mapper) : base(context, mapper)
+        public GenresController(AppDbContext context, IMapper mapper) : base(context, mapper)
         {
             this.context = context;
-            this.logger = logger;
             this.mapper = mapper;
         }
 

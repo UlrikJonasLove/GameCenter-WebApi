@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GameCenter.Controller
 {
     [Route("api")]
-    [HttpHeaderIsPresent("x-version", "1")]
+    //[HttpHeaderIsPresent("x-version", "1")]
     [ApiController]
     public class RootController : ControllerBase
     {

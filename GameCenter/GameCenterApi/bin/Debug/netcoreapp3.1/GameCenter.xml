@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GameCenter</name>
+    </assembly>
+    <members>
+        <member name="M:GameCenter.Controllers.GenresController.Delete(System.Int32)">
+            <summary>
+            Delete a Genre
+            </summary>
+            <param name="id">Id of the genre to delete</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
